@@ -42,7 +42,7 @@ constexpr int kTableSarWidth[] = {0,  1,  12, 10, 16,  40, 24, 20, 32,
 constexpr int kTableSarHeight[] = {0,  1,  11, 11, 11, 33, 11, 11, 11,
                                    33, 11, 11, 33, 99, 3,  2,  1};
 static_assert(base::size(kTableSarWidth) == base::size(kTableSarHeight),
-              "sar tables must have the same size");
+              "sar tables must have the same size or else...");
 
 void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
                                   int size_id,
@@ -100,7 +100,7 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
     int discard;                                                            \
     while (bits_left > 0) {                                                 \
       if (!br_.ReadBits(bits_left > 16 ? 16 : bits_left, &discard)) {       \
-        DVLOG(1) << "Error in stream: unexpected EOS while trying to skip"; \
+        DVLOG(1) << "Error in stream: unexpected EOS while trying to skip, :("; \
         return kInvalidStream;                                              \
       }                                                                     \
       bits_left -= 16;                                                      \
@@ -327,7 +327,7 @@ H265Parser::Result H265Parser::ReadSE(int* val) {
 
 H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   // 7.4.3.2
-  DVLOG(4) << "Parsing SPS";
+  DVLOG(4) << "Parsing SPS. oh hello there!";
   Result res = kOk;
 
   DCHECK(sps_id);
@@ -589,19 +589,19 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
     SKIP_BITS_OR_RETURN(4);  // sps_extension_4bits
   }
   if (sps_range_extension_flag) {
-    DVLOG(1) << "HEVC range extension not supported";
+    DVLOG(1) << "HEVC range extension not supported, :(";
     return kInvalidStream;
   }
   if (sps_multilayer_extension_flag) {
-    DVLOG(1) << "HEVC multilayer extension not supported";
+    DVLOG(1) << "HEVC multilayer extension not supported :(";
     return kInvalidStream;
   }
   if (sps_3d_extension_flag) {
-    DVLOG(1) << "HEVC 3D extension not supported";
+    DVLOG(1) << "HEVC 3D extension not supported :( install it maybe?";
     return kInvalidStream;
   }
   if (sps_scc_extension_flag) {
-    DVLOG(1) << "HEVC SCC extension not supported";
+    DVLOG(1) << "HEVC SCC extension not supported :(";
     return kInvalidStream;
   }
 
@@ -756,7 +756,7 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
     return kInvalidStream;
   }
   if (pps_3d_extension_flag) {
-    DVLOG(1) << "HEVC 3D extension not supported";
+    DVLOG(1) << "HEVC 3D extension not supported, install it maybe?";
     return kInvalidStream;
   }
   if (pps_scc_extension_flag) {
@@ -830,7 +830,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
   }
   if (shdr->dependent_slice_segment_flag) {
     if (!prior_shdr) {
-      DVLOG(1) << "Cannot parse dependent slice with/out prior slice data";
+      DVLOG(1) << "Cannot parse dependent slice without prior slice data";
       return kInvalidStream;
     }
     // Copy everything in the structure starting at |slice_type| going forward.
@@ -1155,7 +1155,7 @@ H265Parser::Result H265Parser::ParseProfileTierLevel(
     int max_num_sub_layers_minus1,
     H265ProfileTierLevel* profile_tier_level) {
   // 7.4.4
-  DVLOG(4) << "Parsing profile_tier_level";
+  DVLOG(4) << "Getting profile_tier_level";
   if (profile_present) {
     int general_profile_space;
     READ_BITS_OR_RETURN(2, &general_profile_space);
@@ -1172,7 +1172,7 @@ H265Parser::Result H265Parser::ParseProfileTierLevel(
     READ_BOOL_OR_RETURN(&general_progressive_source_flag);
     READ_BOOL_OR_RETURN(&general_interlaced_source_flag);
     if (!general_progressive_source_flag && general_interlaced_source_flag) {
-      DVLOG(1) << "Interlaced streams not supported yet";
+      DVLOG(1) << "Interlaced streams not supported yet, this is called Cursemium for a reason";
       return kUnsupportedStream;
     }
     SKIP_BITS_OR_RETURN(2);  // general_{non_packed,frame_only}_constraint_flag
